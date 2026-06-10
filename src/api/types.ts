@@ -5,3 +5,9 @@ export type ActionResult = {
   status: 'success';
   message: string;
 };
+
+export type MutationResult<T = Record<string, unknown>> = {
+  record?: T;
+  affected: Array<{ resource: string; id: string }>;
+  message: string;
+};

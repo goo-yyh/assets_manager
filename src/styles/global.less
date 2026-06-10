@@ -61,6 +61,23 @@ body {
   font-weight: 600;
 }
 
+.management-action-column {
+  white-space: nowrap;
+}
+
+.management-action-cell {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  align-items: center;
+  min-width: max-content;
+  white-space: nowrap;
+}
+
+.management-action-cell .ant-btn {
+  flex: 0 0 auto;
+}
+
 @media (max-width: 1180px) {
   .dashboard-span-3,
   .dashboard-span-4,

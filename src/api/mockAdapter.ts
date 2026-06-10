@@ -1,68 +1,25 @@
 import type { AxiosAdapter, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import type { ApiResponse, PageResult } from '@/types/common';
 import {
-  assetDisposalRecords,
-  assetIntakeRecords,
-  assetInventoryPlans,
-  assetTransferRecords,
-  assets,
-  attachmentRows,
   analyticsPages,
   dashboardData,
-  equipmentFiles,
-  faultAlerts,
-  fieldMappings,
-  integrationStatuses,
   loginAccounts,
-  maintenanceRecords,
-  momRuntimeRecords,
   oeeTrend,
-  operationLogs,
-  organizationTree,
-  repairRecords,
-  roleRows,
-  spareAlerts,
-  spareInboundRecords,
-  spareInventoryPlans,
-  spareOutboundRecords,
-  spareParts,
-  syncRecords,
   users,
 } from '@/mock';
-import type { AppUser, OrgNode } from '@/types/system';
-import type { ActionResult } from './types';
+import {
+  createResource,
+  deleteResource,
+  hasResource,
+  readResource,
+  runResourceAction,
+  updateResource,
+} from '@/mock/store';
+import type { AppUser } from '@/types/system';
 
 type QueryValue = string | number | boolean | string[] | undefined;
 type QueryParams = Record<string, QueryValue>;
 type MockRecord = Record<string, unknown>;
-
-const listRegistry: Record<string, MockRecord[]> = {
-  '/assets/list': assets,
-  '/assets/intake': assetIntakeRecords,
-  '/assets/transfer': assetTransferRecords,
-  '/assets/disposal': assetDisposalRecords,
-  '/assets/inventory': assetInventoryPlans,
-  '/equipment/files': equipmentFiles,
-  '/equipment/attachments': attachmentRows,
-  '/spares/catalog': spareParts,
-  '/spares/stock': spareParts,
-  '/spares/inbound': spareInboundRecords,
-  '/spares/outbound': spareOutboundRecords,
-  '/spares/inventory': spareInventoryPlans,
-  '/spares/alerts': spareAlerts,
-  '/maintenance/runtime': momRuntimeRecords,
-  '/maintenance/repairs': repairRecords,
-  '/maintenance/records': maintenanceRecords,
-  '/maintenance/alerts': faultAlerts,
-  '/integrations/mom': integrationStatuses.filter((item) => item.system === 'mom'),
-  '/integrations/finance': integrationStatuses.filter((item) => item.system === 'finance'),
-  '/integrations/project': integrationStatuses.filter((item) => item.system === 'project'),
-  '/integrations/sync': syncRecords,
-  '/integrations/fields': fieldMappings,
-  '/system/users': users,
-  '/system/roles': roleRows,
-  '/system/logs': operationLogs,
-};
 
 const sleep = (ms: number) =>
   new Promise((resolve) => {
@@ -178,22 +135,33 @@ function paginate<T>(list: T[], params: QueryParams): PageResult<T> {
   };
 }
 
-function flattenOrgs(nodes: OrgNode[]): MockRecord[] {
-  return nodes.flatMap((node) => [
-    node as unknown as MockRecord,
-    ...flattenOrgs(node.children ?? []),
-  ]);
-}
-
 function findUserByUsername(username: string): AppUser {
+  const storeUser = readResource('/system/users').find((item) => item.username === username);
+  if (storeUser) return storeUser as unknown as AppUser;
   const user = users.find((item) => item.username === username);
   return user ?? users[0];
+}
+
+function splitResourceAndId(path: string): { resourcePath: string; id: string } | undefined {
+  const parts = path.split('/').filter(Boolean);
+  if (parts.length < 3) return undefined;
+  const id = parts.at(-1);
+  const resourcePath = `/${parts.slice(0, -1).join('/')}`;
+  return id ? { resourcePath, id } : undefined;
+}
+
+function splitActionPath(path: string): { resourcePath: string; id: string; actionKey: string } | undefined {
+  const [beforeAction, actionKey] = path.split('/actions/');
+  if (!beforeAction || !actionKey) return undefined;
+  const resource = splitResourceAndId(beforeAction);
+  return resource ? { ...resource, actionKey } : undefined;
 }
 
 export const mockAdapter: AxiosAdapter = async (config) => {
   await sleep(220);
   const path = getPath(config.url);
   const params = normalizeParams(config);
+  const method = config.method?.toUpperCase() ?? 'GET';
 
   if (path === '/auth/login') {
     const username = typeof params.username === 'string' ? params.username : '';
@@ -216,33 +184,37 @@ export const mockAdapter: AxiosAdapter = async (config) => {
     });
   }
 
-  if (path.startsWith('/analytics/')) {
-    const pageKey = path.split('/').at(-1) ?? 'assets';
-    return ok(config, analyticsPages[pageKey] ?? analyticsPages.assets);
-  }
-
   if (path === '/maintenance/oee') {
     return ok(config, oeeTrend);
   }
 
-  if (path === '/system/orgs') {
-    return ok(config, paginate(flattenOrgs(organizationTree), params));
-  }
-
-  const source = listRegistry[path];
-  if (source) {
+  if (method === 'GET' && hasResource(path)) {
+    const source = readResource(path);
     const filtered = filterByExactFields(filterByKeyword(filterByScope(source, params), params.keyword), params);
     return ok(config, paginate(filtered, params));
   }
 
-  if (config.method?.toUpperCase() !== 'GET') {
-    // 演示类写操作只返回成功，真实项目应由后端完成状态流转和并发校验。
-    const result: ActionResult = {
-      id: `${Date.now()}`,
-      status: 'success',
-      message: '操作已模拟提交',
-    };
-    return ok(config, result);
+  if (method === 'GET' && path.startsWith('/analytics/')) {
+    const pageKey = path.split('/').at(-1) ?? 'assets';
+    return ok(config, analyticsPages[pageKey] ?? analyticsPages.assets);
+  }
+
+  if (method === 'POST') {
+    const actionInfo = splitActionPath(path);
+    if (actionInfo) {
+      return ok(config, runResourceAction(actionInfo.resourcePath, actionInfo.id, actionInfo.actionKey, parseData(config.data)));
+    }
+    return ok(config, createResource(path, parseData(config.data)));
+  }
+
+  if (method === 'PATCH') {
+    const resource = splitResourceAndId(path);
+    if (resource) return ok(config, updateResource(resource.resourcePath, resource.id, parseData(config.data)));
+  }
+
+  if (method === 'DELETE') {
+    const resource = splitResourceAndId(path);
+    if (resource) return ok(config, deleteResource(resource.resourcePath, resource.id));
   }
 
   return ok(config, {});

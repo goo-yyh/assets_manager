@@ -1,8 +1,9 @@
 import type { ManagementPageConfig } from './types';
+import { extensionPageConfigs } from './extensionPageConfigs';
 
-const viewAction = { key: 'view', label: '查看详情' };
+const viewAction = { key: 'view', label: '详情' };
 
-export const managementPageConfigs: Record<string, ManagementPageConfig> = {
+const basePageConfigs: Record<string, ManagementPageConfig> = {
   'assets.list': {
     key: 'assets.list',
     title: '固定资产台账',
@@ -26,8 +27,8 @@ export const managementPageConfigs: Record<string, ManagementPageConfig> = {
     actions: [
       viewAction,
       { key: 'edit', label: '编辑', permission: 'asset:edit' },
-      { key: 'transfer', label: '发起调拨', permission: 'asset:transfer', primary: true },
-      { key: 'disposal', label: '发起处置', permission: 'asset:disposal', danger: true },
+      { key: 'transfer', label: '调拨', permission: 'asset:transfer', primary: true },
+      { key: 'disposal', label: '处置', permission: 'asset:disposal', danger: true },
     ],
     coverage: ['FR-001 至 FR-009', 'FR-011', 'FR-014', 'FR-017'],
     statusSearch: true,
@@ -50,8 +51,8 @@ export const managementPageConfigs: Record<string, ManagementPageConfig> = {
     ],
     actions: [
       viewAction,
-      { key: 'book', label: '确认入账', permission: 'asset:intake', primary: true },
-      { key: 'archive', label: '补充档案', permission: 'equipment:attachment' },
+      { key: 'book', label: '入账', permission: 'asset:intake', primary: true },
+      { key: 'archive', label: '补档', permission: 'equipment:attachment' },
     ],
     coverage: ['FR-010', 'FR-053 至 FR-060'],
     statusSearch: true,
@@ -75,7 +76,7 @@ export const managementPageConfigs: Record<string, ManagementPageConfig> = {
       { title: '审批状态', dataIndex: 'status', kind: 'status', width: 110 },
       { title: '财务同步', dataIndex: 'financeSyncStatus', kind: 'status', width: 110 },
     ],
-    actions: [viewAction, { key: 'create', label: '新建调拨', permission: 'asset:transfer', primary: true }, { key: 'approve', label: '审批', permission: 'asset:approve' }],
+    actions: [viewAction, { key: 'create', label: '新建', permission: 'asset:transfer', primary: true }, { key: 'approve', label: '审批', permission: 'asset:approve' }],
     coverage: ['FR-012', 'FR-013', 'FR-017', 'FR-028', 'FR-029'],
     statusSearch: true,
   },
@@ -97,7 +98,7 @@ export const managementPageConfigs: Record<string, ManagementPageConfig> = {
       { title: '审批状态', dataIndex: 'status', kind: 'status', width: 100 },
       { title: '核销状态', dataIndex: 'financeWriteOffStatus', kind: 'status', width: 110 },
     ],
-    actions: [viewAction, { key: 'create', label: '新建处置', permission: 'asset:disposal', primary: true }, { key: 'approve', label: '审批', permission: 'asset:approve' }],
+    actions: [viewAction, { key: 'create', label: '新建', permission: 'asset:disposal', primary: true }, { key: 'approve', label: '审批', permission: 'asset:approve' }],
     coverage: ['FR-015', 'FR-016', 'FR-017'],
     statusSearch: true,
   },
@@ -120,7 +121,7 @@ export const managementPageConfigs: Record<string, ManagementPageConfig> = {
       { title: '状态', dataIndex: 'status', kind: 'status', width: 100 },
       { title: '截止日期', dataIndex: 'deadline', width: 120 },
     ],
-    actions: [viewAction, { key: 'scan', label: '模拟扫码', permission: 'asset:inventory', primary: true }, { key: 'diff', label: '差异处理', permission: 'asset:approve' }],
+    actions: [viewAction, { key: 'scan', label: '扫码', permission: 'asset:inventory', primary: true }, { key: 'diff', label: '差异', permission: 'asset:approve' }],
     coverage: ['FR-009'],
     statusSearch: true,
   },
@@ -140,7 +141,7 @@ export const managementPageConfigs: Record<string, ManagementPageConfig> = {
       { title: '完整度', dataIndex: 'completionRate', kind: 'percent', width: 100 },
       { title: '最近变更', dataIndex: 'latestChangedAt', width: 160 },
     ],
-    actions: [viewAction, { key: 'edit', label: '编辑档案', permission: 'equipment:edit' }, { key: 'upload', label: '上传附件', permission: 'equipment:attachment', primary: true }],
+    actions: [viewAction, { key: 'edit', label: '编辑', permission: 'equipment:edit' }, { key: 'upload', label: '上传', permission: 'equipment:attachment', primary: true }],
     coverage: ['FR-018 至 FR-025'],
   },
   'equipment.attachments': {
@@ -159,7 +160,7 @@ export const managementPageConfigs: Record<string, ManagementPageConfig> = {
       { title: '上传时间', dataIndex: 'uploadedAt', width: 120 },
       { title: '大小', dataIndex: 'size', width: 90 },
     ],
-    actions: [viewAction, { key: 'upload', label: '上传附件', permission: 'equipment:attachment', primary: true }],
+    actions: [viewAction, { key: 'upload', label: '上传', permission: 'equipment:attachment', primary: true }],
     coverage: ['FR-021 至 FR-024'],
   },
   'spares.catalog': {
@@ -180,7 +181,7 @@ export const managementPageConfigs: Record<string, ManagementPageConfig> = {
       { title: '默认仓库', dataIndex: 'warehouseName', width: 150 },
       { title: '库存状态', dataIndex: 'status', kind: 'status', width: 110 },
     ],
-    actions: [viewAction, { key: 'edit', label: '编辑', permission: 'spare:edit' }, { key: 'stock', label: '查看库存', permission: 'spare:stock', primary: true }],
+    actions: [viewAction, { key: 'edit', label: '编辑', permission: 'spare:edit' }, { key: 'stock', label: '库存', permission: 'spare:stock', primary: true }],
     coverage: ['FR-031', 'FR-039', 'FR-040'],
     statusSearch: true,
   },
@@ -202,7 +203,7 @@ export const managementPageConfigs: Record<string, ManagementPageConfig> = {
       { title: '最低库存', dataIndex: 'minStock', kind: 'number', width: 100 },
       { title: '状态', dataIndex: 'status', kind: 'status', width: 100 },
     ],
-    actions: [viewAction, { key: 'adjust', label: '调整库存', permission: 'spare:edit' }, { key: 'inventory', label: '发起盘点', permission: 'spare:inventory', primary: true }],
+    actions: [viewAction, { key: 'adjust', label: '调整', permission: 'spare:edit' }, { key: 'inventory', label: '盘点', permission: 'spare:inventory', primary: true }],
     coverage: ['FR-032', 'FR-036', 'FR-040'],
     statusSearch: true,
   },
@@ -224,7 +225,7 @@ export const managementPageConfigs: Record<string, ManagementPageConfig> = {
       { title: '来源单据', dataIndex: 'sourceBill', width: 140 },
       { title: '状态', dataIndex: 'status', kind: 'status', width: 100 },
     ],
-    actions: [viewAction, { key: 'create', label: '新增入库', permission: 'spare:inbound', primary: true }, { key: 'approve', label: '审核', permission: 'spare:approve' }],
+    actions: [viewAction, { key: 'create', label: '入库', permission: 'spare:inbound', primary: true }, { key: 'approve', label: '审核', permission: 'spare:approve' }],
     coverage: ['FR-033'],
     statusSearch: true,
   },
@@ -246,7 +247,7 @@ export const managementPageConfigs: Record<string, ManagementPageConfig> = {
       { title: '用途', dataIndex: 'purpose', width: 220 },
       { title: '审批状态', dataIndex: 'status', kind: 'status', width: 110 },
     ],
-    actions: [viewAction, { key: 'create', label: '发起领用', permission: 'spare:outbound', primary: true }, { key: 'approve', label: '审批', permission: 'spare:approve' }, { key: 'return', label: '未用退库', permission: 'spare:outbound' }],
+    actions: [viewAction, { key: 'create', label: '领用', permission: 'spare:outbound', primary: true }, { key: 'approve', label: '审批', permission: 'spare:approve' }, { key: 'return', label: '退库', permission: 'spare:outbound' }],
     coverage: ['FR-034', 'FR-035', 'FR-038'],
     statusSearch: true,
   },
@@ -268,7 +269,7 @@ export const managementPageConfigs: Record<string, ManagementPageConfig> = {
       { title: '差异数量', dataIndex: 'diffQty', kind: 'number', width: 100 },
       { title: '状态', dataIndex: 'status', kind: 'status', width: 100 },
     ],
-    actions: [viewAction, { key: 'create', label: '新建计划', permission: 'spare:inventory', primary: true }, { key: 'diff', label: '差异处理', permission: 'spare:approve' }],
+    actions: [viewAction, { key: 'create', label: '新建', permission: 'spare:inventory', primary: true }, { key: 'diff', label: '差异', permission: 'spare:approve' }],
     coverage: ['FR-037'],
     statusSearch: true,
   },
@@ -288,7 +289,7 @@ export const managementPageConfigs: Record<string, ManagementPageConfig> = {
       { title: '安全库存', dataIndex: 'safetyStock', kind: 'number', width: 100 },
       { title: '建议', dataIndex: 'suggestion', width: 260 },
     ],
-    actions: [viewAction, { key: 'replenish', label: '生成补货建议', permission: 'spare:edit', primary: true }],
+    actions: [viewAction, { key: 'replenish', label: '补货', permission: 'spare:edit', primary: true }],
     coverage: ['FR-036', 'FR-052'],
     statusSearch: true,
   },
@@ -307,7 +308,7 @@ export const managementPageConfigs: Record<string, ManagementPageConfig> = {
       { title: '成功率', dataIndex: 'successRate', kind: 'percent', width: 100 },
       { title: '负责人', dataIndex: 'owner', width: 130 },
     ],
-    actions: [viewAction, { key: 'sync', label: '模拟同步', permission: 'integration:mom', primary: true }],
+    actions: [viewAction, { key: 'sync', label: '同步', permission: 'integration:mom', primary: true }],
     coverage: ['FR-041 至 FR-046', 'FR-053'],
     statusSearch: true,
   },
@@ -326,7 +327,7 @@ export const managementPageConfigs: Record<string, ManagementPageConfig> = {
       { title: '成功率', dataIndex: 'successRate', kind: 'percent', width: 100 },
       { title: '负责人', dataIndex: 'owner', width: 130 },
     ],
-    actions: [viewAction, { key: 'sync', label: '价值同步', permission: 'integration:finance', primary: true }],
+    actions: [viewAction, { key: 'sync', label: '同步', permission: 'integration:finance', primary: true }],
     coverage: ['FR-054 至 FR-058'],
     statusSearch: true,
   },
@@ -345,7 +346,7 @@ export const managementPageConfigs: Record<string, ManagementPageConfig> = {
       { title: '成功率', dataIndex: 'successRate', kind: 'percent', width: 100 },
       { title: '负责人', dataIndex: 'owner', width: 130 },
     ],
-    actions: [viewAction, { key: 'import', label: '导入验收单', permission: 'integration:project', primary: true }],
+    actions: [viewAction, { key: 'import', label: '导入', permission: 'integration:project', primary: true }],
     coverage: ['FR-059', 'FR-060'],
     statusSearch: true,
   },
@@ -364,7 +365,7 @@ export const managementPageConfigs: Record<string, ManagementPageConfig> = {
       { title: '部门', dataIndex: 'department', width: 140 },
       { title: '状态', dataIndex: 'status', kind: 'status', width: 90 },
     ],
-    actions: [viewAction, { key: 'edit', label: '编辑用户', permission: 'system:user', primary: true }],
+    actions: [viewAction, { key: 'edit', label: '编辑', permission: 'system:user', primary: true }],
     coverage: ['角色权限管理', '数据范围配置'],
     statusSearch: true,
   },
@@ -383,7 +384,7 @@ export const managementPageConfigs: Record<string, ManagementPageConfig> = {
       { title: '说明', dataIndex: 'description', width: 300 },
       { title: '状态', dataIndex: 'status', kind: 'status', width: 90 },
     ],
-    actions: [viewAction, { key: 'edit', label: '配置权限', permission: 'system:role', primary: true }],
+    actions: [viewAction, { key: 'edit', label: '配置', permission: 'system:role', primary: true }],
     coverage: ['菜单权限', '按钮权限', '数据权限'],
     statusSearch: true,
   },
@@ -406,4 +407,9 @@ export const managementPageConfigs: Record<string, ManagementPageConfig> = {
     coverage: ['FR-017', '操作日志'],
     statusSearch: true,
   },
+};
+
+export const managementPageConfigs: Record<string, ManagementPageConfig> = {
+  ...basePageConfigs,
+  ...extensionPageConfigs,
 };
