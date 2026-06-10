@@ -1,4 +1,5 @@
 node_modules
 dist
+reference/
 .chat
 .DS_Store
