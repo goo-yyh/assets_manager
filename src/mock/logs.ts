@@ -1,0 +1,48 @@
+import type { OperationLog } from '@/types/system';
+
+export const operationLogs: OperationLog[] = [
+  {
+    id: 'log-001',
+    operator: '张敏',
+    module: '资产调拨',
+    action: '提交审批',
+    target: 'DB-2026-0068',
+    result: 'success',
+    ip: '10.10.8.21',
+    createdAt: '2026-06-07 13:22',
+    factoryId: 'fac-nb',
+  },
+  {
+    id: 'log-002',
+    operator: '王磊',
+    module: '备件入库',
+    action: '创建采购入库单',
+    target: 'RK-2026-0198',
+    result: 'success',
+    ip: '10.18.2.44',
+    createdAt: '2026-06-09 14:10',
+    factoryId: 'fac-ah',
+  },
+  {
+    id: 'log-003',
+    operator: '赵芳',
+    module: '财务对接',
+    action: '核销确认',
+    target: 'CZ-2026-0024',
+    result: 'success',
+    ip: '10.1.3.12',
+    createdAt: '2026-05-22 11:41',
+    factoryId: 'fac-sz',
+  },
+  {
+    id: 'log-004',
+    operator: '陈工',
+    module: 'MOM 数据展示',
+    action: '查看维修记录',
+    target: 'WX-2026-0608',
+    result: 'success',
+    ip: '10.22.9.31',
+    createdAt: '2026-06-09 18:40',
+    factoryId: 'fac-cq',
+  },
+];
