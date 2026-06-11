@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { App, Button, Card, Input, Radio, Space, Typography } from 'antd';
+import { App, Button, Card, Input, Select, Space, Typography } from 'antd';
 import { LoginOutlined } from '@ant-design/icons';
 import { useMutation } from '@tanstack/react-query';
 import { Navigate, useNavigate } from 'react-router-dom';
@@ -9,10 +9,9 @@ import { useAuthStore } from '@/stores/authStore';
 import type { RoleKey } from '@/types/permission';
 
 export default function LoginPage() {
-  const defaultAccount = loginAccounts[0];
-  const [roleKey, setRoleKey] = useState<RoleKey>(defaultAccount.roleKey);
-  const [username, setUsername] = useState(defaultAccount.username);
-  const [password, setPassword] = useState(defaultAccount.password);
+  const [roleKey, setRoleKey] = useState<RoleKey>();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const setAuth = useAuthStore((state) => state.setAuth);
   const token = useAuthStore((state) => state.token);
   const navigate = useNavigate();
@@ -48,41 +47,27 @@ export default function LoginPage() {
         <Space direction="vertical" size={24} style={{ width: '100%' }}>
           <div>
             <Typography.Title level={2} style={{ marginBottom: 8 }}>
-              资产管理系统 Demo
+              资产管理系统
             </Typography.Title>
             <Typography.Text type="secondary">
-              汽配制造集团资产、设备档案、备品备件、MOM 数据和权限管理静态演示。
+              汽配制造集团资产、设备档案、备品备件、MOM 数据和权限管理平台。
             </Typography.Text>
           </div>
 
-          <Radio.Group
+          <Select<RoleKey>
             value={roleKey}
-            onChange={(event) => {
-              const nextRoleKey = event.target.value as RoleKey;
-              const account = loginAccounts.find((item) => item.roleKey === nextRoleKey) ?? defaultAccount;
+            placeholder="请选择登录角色"
+            options={loginAccounts.map((account) => ({
+              label: `${account.roleName}（${account.username}）`,
+              value: account.roleKey,
+            }))}
+            onChange={(nextRoleKey) => {
               setRoleKey(nextRoleKey);
-              setUsername(account.username);
-              setPassword(account.password);
             }}
             style={{ width: '100%' }}
-          >
-            <div className="dashboard-grid">
-              {loginAccounts.map((account) => (
-                <Radio.Button
-                  key={account.roleKey}
-                  value={account.roleKey}
-                  className="dashboard-span-3"
-                  style={{ height: 96, padding: 12, whiteSpace: 'normal', borderRadius: 8, marginBottom: 12 }}
-                >
-                  <Typography.Text strong>{account.roleName}</Typography.Text>
-                  <br />
-                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                    {account.username}
-                  </Typography.Text>
-                </Radio.Button>
-              ))}
-            </div>
-          </Radio.Group>
+            showSearch
+            optionFilterProp="label"
+          />
 
           <Space direction="vertical" size={12} style={{ width: '100%' }}>
             <Input
@@ -90,15 +75,17 @@ export default function LoginPage() {
               value={username}
               onChange={(event) => setUsername(event.target.value)}
               autoComplete="username"
+              placeholder="请输入账号"
             />
             <Input.Password
               addonBefore="密码"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               autoComplete="current-password"
+              placeholder="请输入密码"
             />
             <Typography.Text type="secondary">
-              点击角色会自动填充演示账号，默认密码均为 Demo@2026。
+              请选择角色并输入账号密码，初始密码统一为 123456。
             </Typography.Text>
           </Space>
 
@@ -110,7 +97,7 @@ export default function LoginPage() {
             onClick={() => mutation.mutate({ username, password })}
             block
           >
-            模拟登录
+            登录
           </Button>
         </Space>
       </Card>

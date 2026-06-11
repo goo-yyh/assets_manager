@@ -150,8 +150,8 @@ export const appRoutes: AppRouteItem[] = [
         path: '/analytics/assets-board',
         name: '资产看板',
         children: [
-          { path: '/analytics/assets', name: '资产总览', permission: 'analytics:asset', element: <AnalyticsPage pageKey="assets" title="资产总览" subTitle="资产总量、价值、状态和分类结构。" /> },
-          { path: '/analytics/factory', name: '厂区对比', permission: 'analytics:factory', element: <AnalyticsPage pageKey="factory" title="厂区对比" subTitle="各厂区资产数量、资产价值、利用率和组织维度对比。" /> },
+          { path: '/analytics/assets', name: '资产总览', permission: 'analytics:asset', element: <AnalyticsPage pageKey="assets" title="资产总览" /> },
+          { path: '/analytics/factory', name: '厂区对比', permission: 'analytics:factory', element: <AnalyticsPage pageKey="factory" title="厂区对比" /> },
           { path: '/analytics/asset-map', name: '资产地图', permission: 'analytics:factory', element: <ManagementPage pageKey="assets.map" /> },
         ],
       },
@@ -159,9 +159,9 @@ export const appRoutes: AppRouteItem[] = [
         path: '/analytics/operation',
         name: '运营分析',
         children: [
-          { path: '/analytics/maintenance', name: '维修分析', permission: 'analytics:maintenance', element: <AnalyticsPage pageKey="maintenance" title="维修分析" subTitle="故障率、停机时长、维修费用和故障原因分析。" /> },
-          { path: '/analytics/finance', name: '费用分析', permission: 'analytics:finance', element: <AnalyticsPage pageKey="finance" title="费用分析" subTitle="原值、累计折旧、净值、处置费用和厂区价值结构。" /> },
-          { path: '/analytics/spares', name: '备件分析', permission: 'analytics:spare', element: <AnalyticsPage pageKey="spares" title="备件分析" subTitle="备件库存、消耗、低库存和长期未动用分析。" /> },
+          { path: '/analytics/maintenance', name: '维修分析', permission: 'analytics:maintenance', element: <AnalyticsPage pageKey="maintenance" title="维修分析" /> },
+          { path: '/analytics/finance', name: '费用分析', permission: 'analytics:finance', element: <AnalyticsPage pageKey="finance" title="费用分析" /> },
+          { path: '/analytics/spares', name: '备件分析', permission: 'analytics:spare', element: <AnalyticsPage pageKey="spares" title="备件分析" /> },
           { path: '/analytics/warnings', name: '预警看板', permission: 'analytics:spare', element: <ManagementPage pageKey="analytics.warnings" /> },
         ],
       },

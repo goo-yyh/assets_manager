@@ -85,12 +85,12 @@ export default function DashboardPage() {
   );
 
   return (
-    <AppPageContainer title="首页看板" subTitle="集团资产、维保、备件和待办事项总览。">
+    <AppPageContainer title="首页看板">
       <Space direction="vertical" size={16} style={{ width: '100%' }}>
         <Alert
           showIcon
           type="info"
-          message={`当前角色：${user?.roleName ?? '-'}，数据范围：${user?.factoryName ?? '集团'}`}
+          message={`数据范围：${user?.factoryName ?? '集团'}`}
         />
 
         <div className="dashboard-grid">

@@ -71,13 +71,11 @@ export type ActionContext = {
 export type ManagementPageConfig = {
   key: ManagementPageKey;
   title: string;
-  subTitle: string;
   apiPath: string;
   permission: PermissionCode;
   editPermission?: PermissionCode;
   approvePermission?: PermissionCode;
   columns: PageColumn[];
   actions: PageAction[];
-  coverage: string[];
   statusSearch?: boolean;
 };

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { ModalForm, ProFormDigit, ProFormSelect, ProFormText } from '@ant-design/pro-components';
-import { App, Card, Space, Table, Tree } from 'antd';
+import { App, Card, Descriptions, Space, Table, Tree, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import type { DataNode } from 'antd/es/tree';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -29,6 +29,14 @@ const orgTypeOptions = [
   { label: '部门', value: 'department' },
 ];
 
+const orgTypeText: Record<OrgNode['type'], string> = {
+  group: '集团',
+  factory: '厂区',
+  workshop: '车间',
+  line: '产线',
+  department: '部门',
+};
+
 const orgSchema = z.object({
   name: z.string().min(2, '组织名称至少 2 个字符'),
   type: z.enum(['group', 'factory', 'workshop', 'line', 'department']),
@@ -36,6 +44,13 @@ const orgSchema = z.object({
   assetCount: z.coerce.number().min(0, '资产数量不能小于 0'),
   parentId: z.string().optional(),
 });
+
+function nextOrgType(type?: OrgNode['type']): OrgNode['type'] {
+  if (type === 'group') return 'factory';
+  if (type === 'factory') return 'workshop';
+  if (type === 'workshop') return 'line';
+  return 'department';
+}
 
 function buildTree(rows: OrgRow[]): DataNode[] {
   const nodeMap = new Map<string, DataNode>();
@@ -58,20 +73,58 @@ function buildTree(rows: OrgRow[]): DataNode[] {
   return roots;
 }
 
+function childRows(rows: OrgRow[], parentId?: string): OrgRow[] {
+  return rows.filter((row) => row.parentId === parentId);
+}
+
+function childCount(rows: OrgRow[], id: string): number {
+  return childRows(rows, id).length;
+}
+
+function orgPath(rows: OrgRow[], id?: string): string {
+  const path: string[] = [];
+  const visited = new Set<string>();
+  let current = rows.find((row) => row.id === id);
+  while (current && !visited.has(current.id)) {
+    visited.add(current.id);
+    path.unshift(current.name);
+    current = rows.find((row) => row.id === current?.parentId);
+  }
+  return path.join(' / ');
+}
+
+function descendantIds(rows: OrgRow[], id: string): Set<string> {
+  const ids = new Set<string>();
+  const walk = (parentId: string) => {
+    childRows(rows, parentId).forEach((child) => {
+      ids.add(child.id);
+      walk(child.id);
+    });
+  };
+  walk(id);
+  return ids;
+}
+
 function parentOptions(rows: OrgRow[], currentId?: string) {
+  const blockedIds = currentId ? descendantIds(rows, currentId) : new Set<string>();
   return rows
-    .filter((row) => row.id !== currentId)
+    .filter((row) => row.id !== currentId && !blockedIds.has(row.id))
     .map((row) => ({ label: row.name, value: row.id }));
 }
 
-function initialValues(row?: OrgRow): Record<string, unknown> {
+function initialValues(row?: OrgRow, parent?: OrgRow): Record<string, unknown> {
   return {
     name: row?.name ?? '新增组织',
-    type: row?.type ?? 'department',
+    type: row?.type ?? nextOrgType(parent?.type),
     manager: row?.manager ?? '组织负责人',
     assetCount: row?.assetCount ?? 0,
-    parentId: row?.parentId ?? 'group',
+    parentId: row?.parentId ?? parent?.id ?? 'group',
   };
+}
+
+function createButtonText(parent?: OrgRow): string {
+  const type = nextOrgType(parent?.type);
+  return `新增${orgTypeText[type]}`;
 }
 
 export default function OrgPage() {
@@ -79,6 +132,7 @@ export default function OrgPage() {
   const queryClient = useQueryClient();
   const [editingRow, setEditingRow] = useState<OrgRow>();
   const [creating, setCreating] = useState(false);
+  const [selectedOrgId, setSelectedOrgId] = useState('group');
   const params = { pageNum: 1, pageSize: 200 };
 
   const { data, isFetching } = useQuery({
@@ -89,6 +143,12 @@ export default function OrgPage() {
   const rows = useMemo(() => data?.list ?? [], [data?.list]);
   const treeData = useMemo(() => buildTree(rows), [rows]);
   const expandedKeys = useMemo(() => rows.map((row) => row.id), [rows]);
+  const selectedOrg = useMemo(
+    () => rows.find((row) => row.id === selectedOrgId) ?? rows.find((row) => row.id === 'group') ?? rows[0],
+    [rows, selectedOrgId],
+  );
+  const selectedChildren = useMemo(() => childRows(rows, selectedOrg?.id), [rows, selectedOrg?.id]);
+  const selectedPath = useMemo(() => orgPath(rows, selectedOrg?.id), [rows, selectedOrg?.id]);
 
   const mutation = useMutation<MutationResult<OrgRow>, Error, OrgMutationPayload>({
     mutationFn: ({ mode, id, values }) => {
@@ -104,10 +164,10 @@ export default function OrgPage() {
 
   const columns: ColumnsType<OrgRow> = [
     { title: '组织名称', dataIndex: 'name', width: 220 },
-    { title: '组织类型', dataIndex: 'type', width: 110 },
+    { title: '组织类型', dataIndex: 'type', width: 110, render: (value) => orgTypeText[value as OrgNode['type']] ?? value },
     { title: '负责人', dataIndex: 'manager', width: 120 },
+    { title: '直属下级', dataIndex: 'id', width: 100, render: (value) => childCount(rows, String(value)) },
     { title: '资产数量', dataIndex: 'assetCount', width: 100 },
-    { title: '上级组织', dataIndex: 'parentId', width: 140, render: (value) => rows.find((row) => row.id === value)?.name ?? '集团根节点' },
     {
       title: '操作',
       key: 'action',
@@ -123,11 +183,11 @@ export default function OrgPage() {
             size="small"
             danger
             icon={<DeleteOutlined />}
-            disabled={row.id === 'group'}
+            disabled={row.id === 'group' || childCount(rows, row.id) > 0}
             onClick={() => {
               modal.confirm({
                 title: '确认删除组织？',
-                content: '删除后组织明细和组织树会立即刷新。',
+                content: '删除后组织明细和组织树会立即刷新；存在下级组织时请先调整下级归属。',
                 okText: '删除',
                 okButtonProps: { danger: true },
                 cancelText: '取消',
@@ -145,25 +205,51 @@ export default function OrgPage() {
   return (
     <AppPageContainer
       title="组织架构"
-      subTitle="集团、厂区、车间、产线多层级组织与资产数据范围。"
       extra={
         <PermissionButton permission="system:org" type="primary" icon={<PlusOutlined />} onClick={() => setCreating(true)}>
-          新增
+          {createButtonText(selectedOrg)}
         </PermissionButton>
       }
     >
       <div className="dashboard-grid">
         <Card title="组织树" className="dashboard-span-4">
-          <Tree expandedKeys={expandedKeys} autoExpandParent treeData={treeData} />
+          <Tree
+            expandedKeys={expandedKeys}
+            selectedKeys={selectedOrg ? [selectedOrg.id] : []}
+            autoExpandParent
+            blockNode
+            treeData={treeData}
+            onSelect={(keys) => {
+              const nextKey = keys[0];
+              if (typeof nextKey === 'string') setSelectedOrgId(nextKey);
+            }}
+          />
         </Card>
-        <Card title="组织明细" className="dashboard-span-8">
+        <Card
+          title="组织明细"
+          className="dashboard-span-8"
+          extra={<Typography.Text type="secondary">{selectedPath}</Typography.Text>}
+        >
+          <Descriptions
+            size="small"
+            column={5}
+            items={[
+              { key: 'name', label: '当前组织', children: selectedOrg?.name ?? '-' },
+              { key: 'type', label: '组织类型', children: selectedOrg ? orgTypeText[selectedOrg.type] : '-' },
+              { key: 'manager', label: '负责人', children: selectedOrg?.manager ?? '-' },
+              { key: 'assetCount', label: '资产数量', children: selectedOrg?.assetCount ?? '-' },
+              { key: 'children', label: '直属下级', children: selectedChildren.length },
+            ]}
+            style={{ marginBottom: 16 }}
+          />
           <Table<OrgRow>
             rowKey="id"
             columns={columns}
-            dataSource={rows}
+            dataSource={selectedChildren}
             loading={isFetching}
             pagination={false}
-            scroll={{ x: 840 }}
+            locale={{ emptyText: '当前组织暂无直属下级' }}
+            scroll={{ x: 800 }}
           />
         </Card>
       </div>
@@ -172,7 +258,7 @@ export default function OrgPage() {
         key={editingRow?.id ?? (creating ? 'create' : 'closed')}
         title={editingRow ? '编辑组织' : '新增组织'}
         open={creating || Boolean(editingRow)}
-        initialValues={initialValues(editingRow)}
+        initialValues={initialValues(editingRow, selectedOrg)}
         modalProps={{
           destroyOnHidden: true,
           onCancel: () => {

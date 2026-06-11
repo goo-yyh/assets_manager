@@ -144,17 +144,17 @@ function fieldOptions(column: PageColumn) {
 function defaultText(dataIndex: string, title: string, user?: CurrentUser): string {
   const suffix = Date.now().toString().slice(-5);
   const defaults: Record<string, string> = {
-    assetCode: `AST-DEMO-${suffix}`,
+    assetCode: `AST-ZJ-${suffix}`,
     assetName: '新增汽配设备',
     name: title.includes('备件') ? '新增汽配备件' : '新增汽配设备',
     equipmentName: '新增设备档案',
-    spareCode: `SP-DEMO-${suffix}`,
+    spareCode: `SP-ZJ-${suffix}`,
     spareName: '新增备件',
     billCode: `BILL-${suffix}`,
     bizCode: `BIZ-${suffix}`,
     planCode: `PLAN-${suffix}`,
     planName: '新增盘点计划',
-    financeAssetCode: `FA-DEMO-${suffix}`,
+    financeAssetCode: `FA-ZJ-${suffix}`,
     projectName: '汽配产线改造项目',
     applicant: user?.name ?? '张敏',
     operator: user?.name ?? '张敏',
@@ -167,11 +167,11 @@ function defaultText(dataIndex: string, title: string, user?: CurrentUser): stri
     uploadedAt: nowText(),
     latestChangedAt: nowText(),
     deadline: '2026-06-30',
-    fileName: '新增演示资料.pdf',
+    fileName: '新增业务资料.pdf',
     size: '1.2MB',
     sourceBill: `SRC-${suffix}`,
   };
-  return defaults[dataIndex] ?? `${title}演示值`;
+  return defaults[dataIndex] ?? `${title}待填值`;
 }
 
 function initialValues(columns: PageColumn[], row?: RowRecord, user?: CurrentUser): Record<string, unknown> {
@@ -428,7 +428,6 @@ export function ManagementPage({ pageKey }: ManagementPageProps) {
   return (
     <AppPageContainer
       title={config.title}
-      subTitle={config.subTitle}
       extra={
         <Space wrap>
           {config.editPermission ? (
@@ -449,17 +448,14 @@ export function ManagementPage({ pageKey }: ManagementPageProps) {
     >
       <Space direction="vertical" size={16} style={{ width: '100%' }}>
         <div className="dashboard-grid">
-          <Card className="dashboard-span-3 metric-card">
+          <Card className="dashboard-span-4 metric-card">
             <Statistic title="当前模块记录" value={total} suffix="条" />
           </Card>
-          <Card className="dashboard-span-3 metric-card">
+          <Card className="dashboard-span-4 metric-card">
             <Statistic title="当前页待审批" value={pendingCount} suffix="条" />
           </Card>
-          <Card className="dashboard-span-3 metric-card">
+          <Card className="dashboard-span-4 metric-card">
             <Statistic title="预警/异常" value={warningCount} suffix="条" />
-          </Card>
-          <Card className="dashboard-span-3 metric-card">
-            <Statistic title="需求覆盖" value={config.coverage.length} suffix="项" />
           </Card>
         </div>
 
@@ -487,7 +483,6 @@ export function ManagementPage({ pageKey }: ManagementPageProps) {
             }))
           }
           onReset={() => setParams({ pageNum: 1, pageSize: params.pageSize })}
-          toolBarRender={() => config.coverage.map((item) => <Tag key={item} color="blue">{item}</Tag>)}
         />
 
         {integrationSystem ? (

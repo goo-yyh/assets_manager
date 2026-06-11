@@ -69,7 +69,7 @@ src/
       user.ts
       auth.ts
       role.ts
-  assets/               # 静态资源
+  assets/               # 资源文件
   components/           # 全局通用组件
   config/               # 项目配置、菜单配置、权限配置
   constants/            # 常量、枚举映射
@@ -841,4 +841,3 @@ export type ApiResponse<T> = {
 - 样式：CSS Modules + Ant Design token。
 - 权限：路由、菜单、按钮三层控制。
 - 构建：Vite SPA。
-

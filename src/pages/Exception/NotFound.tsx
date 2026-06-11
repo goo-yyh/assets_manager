@@ -6,7 +6,6 @@ export default function NotFoundPage() {
     <Result
       status="404"
       title="404"
-      subTitle="页面不存在或路由未配置。"
       extra={
         <Link to="/dashboard">
           <Button type="primary">返回首页</Button>

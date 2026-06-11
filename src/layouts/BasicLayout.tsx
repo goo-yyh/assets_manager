@@ -1,10 +1,9 @@
-import { LogoutOutlined, ReloadOutlined } from '@ant-design/icons';
+import { LogoutOutlined } from '@ant-design/icons';
 import { ProLayout } from '@ant-design/pro-components';
 import type { MenuDataItem } from '@ant-design/pro-components';
 import { Button, Space, Typography } from 'antd';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { appRoutes, type AppRouteItem } from '@/config/routes';
-import { resetMockStore } from '@/mock/store';
 import { useAuthStore } from '@/stores/authStore';
 import { useLayoutStore } from '@/stores/layoutStore';
 import { canShowRoute } from '@/utils/permission';
@@ -49,17 +48,7 @@ export function BasicLayout() {
       menuItemRender={(item, dom) => (item.children || !item.path ? dom : <Link to={item.path}>{dom}</Link>)}
       rightContentRender={() => (
         <Space size={12}>
-          <Typography.Text>{user?.name}</Typography.Text>
-          <Typography.Text type="secondary">{user?.roleName}</Typography.Text>
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={() => {
-              resetMockStore();
-              window.location.reload();
-            }}
-          >
-            重置数据
-          </Button>
+          <Typography.Text>{user?.roleName}</Typography.Text>
           <Button
             icon={<LogoutOutlined />}
             onClick={() => {

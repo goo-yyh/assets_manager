@@ -87,7 +87,7 @@ export default function MomDataPage() {
   const faultCount = runtimeList.filter((item) => item.state === 'fault').length;
 
   return (
-    <AppPageContainer title="MOM 数据展示" subTitle="设备运行状态、OEE、维修记录、保养记录和故障告警。">
+    <AppPageContainer title="MOM 数据展示">
       <Space direction="vertical" size={16} style={{ width: '100%' }}>
         <Alert
           type="info"

@@ -36,7 +36,7 @@ export type MutationResult = {
 
 type StoreData = Record<string, MockRecord[]>;
 
-const storageKey = 'assets-manager-demo-store-v7';
+const storageKey = 'assets-manager-store-v9';
 
 const aliasMap: Record<string, string> = {
   '/assets/import': '/assets/intake',
@@ -209,7 +209,7 @@ function appendLog(data: StoreData, action: string, target: string, factoryId?: 
   const log: MockRecord = {
     id: `log-${Date.now()}`,
     operator: '系统管理员',
-    module: '静态演示操作',
+    module: '业务操作',
     action,
     target,
     result: 'success',
@@ -253,7 +253,7 @@ function buildRecord(path: string, payload: Record<string, unknown>): MockRecord
   if (resource === '/assets/list') {
     return {
       ...base,
-      assetCode: readString(base, 'assetCode') ?? `AST-DEMO-${Date.now()}`,
+      assetCode: readString(base, 'assetCode') ?? `AST-ZJ-${Date.now()}`,
       name: readString(base, 'name') ?? readString(base, 'assetName') ?? '新增汽配设备',
       category: readString(base, 'category') ?? '生产设备',
       status: readString(base, 'status') ?? 'in_use',
@@ -266,7 +266,7 @@ function buildRecord(path: string, payload: Record<string, unknown>): MockRecord
   if (resource === '/spares/catalog') {
     return recalcSpareStatus({
       ...base,
-      spareCode: readString(base, 'spareCode') ?? `SP-DEMO-${Date.now()}`,
+      spareCode: readString(base, 'spareCode') ?? `SP-ZJ-${Date.now()}`,
       name: readString(base, 'name') ?? readString(base, 'spareName') ?? '新增汽配备件',
       stockQty: readNumber(base, 'stockQty') ?? 0,
       safetyStock: readNumber(base, 'safetyStock') ?? 10,
@@ -356,7 +356,7 @@ function createDisposal(data: StoreData, asset: MockRecord) {
     assetCode: asset.assetCode,
     assetName: asset.name,
     disposalType: 'scrap',
-    reason: '静态演示发起处置',
+    reason: '资产台账发起处置',
     evaluationAmount: readNumber(asset, 'netValue') ?? 0,
     financeWriteOffStatus: 'pending',
     status: 'pending',
@@ -381,7 +381,7 @@ function bookIntake(data: StoreData, intake: MockRecord) {
     assetId: asset.id,
     assetCode: asset.assetCode,
     equipmentName: asset.name,
-    model: 'DEMO',
+    model: 'ZX-1000',
     manufacturer: '汽配设备供应商',
     factoryId: asset.factoryId,
     factoryName: asset.factoryName,
@@ -418,7 +418,7 @@ function syncIntegration(data: StoreData, resource: string, record: MockRecord) 
     bizType: system === 'project' ? '项目验收转固' : '接口同步',
     direction: system === 'finance' ? 'outbound' : 'inbound',
     status: 'success',
-    summary: `${safeText(record.systemName, '外部系统')}已完成一次演示同步。`,
+    summary: `${safeText(record.systemName, '外部系统')}已完成一次业务同步。`,
     createdAt: nowText(),
     factoryId: 'fac-nb',
   });
@@ -428,7 +428,7 @@ function syncIntegration(data: StoreData, resource: string, record: MockRecord) 
       assetName: '项目验收导入自动化检测工位',
       sourceSystem: 'project',
       projectName: '项目管理系统验收导入',
-      financeAssetCode: `FA-DEMO-${Date.now().toString().slice(-5)}`,
+      financeAssetCode: `FA-ZJ-${Date.now().toString().slice(-5)}`,
       status: 'pending',
       factoryId: 'fac-nb',
       applicant: '项目管理系统',

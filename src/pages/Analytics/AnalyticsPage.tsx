@@ -13,7 +13,6 @@ import { queryKeys } from '@/utils/queryKeys';
 type AnalyticsPageProps = {
   pageKey: AnalyticsKey;
   title: string;
-  subTitle: string;
 };
 
 const tableColumns: ColumnsType<ChartDatum> = [
@@ -45,7 +44,7 @@ function makeChartOption(title: string, data: ChartDatum[] | TrendPoint[], color
   };
 }
 
-export function AnalyticsPage({ pageKey, title, subTitle }: AnalyticsPageProps) {
+export function AnalyticsPage({ pageKey, title }: AnalyticsPageProps) {
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.analytics(pageKey),
     queryFn: () => getAnalyticsPage(pageKey),
@@ -61,7 +60,7 @@ export function AnalyticsPage({ pageKey, title, subTitle }: AnalyticsPageProps) 
   );
 
   return (
-    <AppPageContainer title={title} subTitle={subTitle}>
+    <AppPageContainer title={title}>
       <Space direction="vertical" size={16} style={{ width: '100%' }}>
         <div className="dashboard-grid">
           {(data?.metrics ?? []).map((metric) => (

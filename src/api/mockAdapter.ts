@@ -168,10 +168,10 @@ export const mockAdapter: AxiosAdapter = async (config) => {
     const password = typeof params.password === 'string' ? params.password : '';
     const account = loginAccounts.find((item) => item.username === username && item.password === password);
     if (!account) {
-      return fail(config, '账号或密码不正确，请使用 README 中的演示账号。');
+      return fail(config, '账号或密码不正确，请使用 README 中的账号信息。');
     }
     const user = findUserByUsername(account.username);
-    return ok(config, { token: `mock-token-${user.roleKey}`, user });
+    return ok(config, { token: `asset-token-${user.roleKey}`, user });
   }
 
   if (path === '/dashboard') {

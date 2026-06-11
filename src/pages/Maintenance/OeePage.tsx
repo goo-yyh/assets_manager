@@ -42,7 +42,7 @@ export default function OeePage() {
   );
 
   return (
-    <AppPageContainer title="OEE 数据" subTitle="MOM 同步的设备综合效率、故障率和停机趋势。">
+    <AppPageContainer title="OEE 数据">
       <Space direction="vertical" size={16} style={{ width: '100%' }}>
         <div className="dashboard-grid">
           <Card className="dashboard-span-4 metric-card">
