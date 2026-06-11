@@ -1,0 +1,100 @@
+.loginPage {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 48px 32px;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(22, 119, 255, 0.1), transparent 30%),
+    linear-gradient(135deg, #eef6ff 0%, #f7fafc 46%, #e8f3ff 100%);
+}
+
+.loginCard {
+  width: min(100%, 920px);
+  border: 1px solid rgba(22, 119, 255, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 24px 72px rgba(22, 119, 255, 0.14);
+}
+
+.loginCard :global(.ant-card-body) {
+  padding: 72px 64px 56px;
+}
+
+.loginContent {
+  width: 100%;
+}
+
+.loginHeader {
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.loginTitle:global(.ant-typography) {
+  margin-bottom: 0;
+  font-size: 44px;
+  line-height: 1.2;
+}
+
+.loginForm {
+  width: 100%;
+}
+
+.loginForm :global(.ant-input),
+.loginForm :global(.ant-input-affix-wrapper),
+.loginForm :global(.ant-input-group-addon) {
+  font-size: 17px;
+}
+
+.loginForm :global(.ant-input),
+.loginForm :global(.ant-input-affix-wrapper),
+.loginForm :global(.ant-input-group-addon) {
+  height: 52px;
+}
+
+.loginForm :global(.ant-input) {
+  padding: 0 18px;
+}
+
+.loginForm :global(.ant-input-affix-wrapper) {
+  padding: 0 18px;
+}
+
+.loginForm :global(.ant-input-affix-wrapper .ant-input) {
+  height: auto;
+  padding: 0;
+}
+
+.loginForm :global(.ant-input-group-addon) {
+  min-width: 64px;
+  padding: 0 16px;
+  font-weight: 600;
+}
+
+.loginTips {
+  margin-top: 4px;
+}
+
+.loginButton {
+  height: 52px;
+  margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+  .loginPage {
+    padding: 32px 20px;
+  }
+
+  .loginCard :global(.ant-card-body) {
+    padding: 48px 32px 40px;
+  }
+
+  .loginTitle:global(.ant-typography) {
+    font-size: 34px;
+  }
+
+  .loginForm :global(.ant-input),
+  .loginForm :global(.ant-input-affix-wrapper),
+  .loginForm :global(.ant-input-group-addon) {
+    height: 48px;
+    font-size: 15px;
+  }
+}

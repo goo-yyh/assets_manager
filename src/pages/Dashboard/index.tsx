@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Alert, Card, List, Space, Statistic, Table, Tag, Typography } from 'antd';
+import { Card, List, Space, Statistic, Table, Tag, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import type { EChartsOption } from 'echarts';
 import { useQuery } from '@tanstack/react-query';
@@ -87,12 +87,6 @@ export default function DashboardPage() {
   return (
     <AppPageContainer title="首页看板">
       <Space direction="vertical" size={16} style={{ width: '100%' }}>
-        <Alert
-          showIcon
-          type="info"
-          message={`数据范围：${user?.factoryName ?? '集团'}`}
-        />
-
         <div className="dashboard-grid">
           {(data?.metrics ?? []).map((metric) => (
             <Card key={metric.title} className="dashboard-span-3 metric-card" loading={isLoading}>
