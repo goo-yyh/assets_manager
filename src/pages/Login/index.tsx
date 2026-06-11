@@ -56,9 +56,6 @@ export default function LoginPage() {
               autoComplete="current-password"
               placeholder="请输入密码"
             />
-            <Typography.Text type="secondary" className={styles.loginTips}>
-              请输入账号密码，初始密码统一为 123456。
-            </Typography.Text>
           </Space>
 
           <Button
